@@ -21,15 +21,11 @@ class UserLoginSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields=['email','password']
 
-
-
 class UserTagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User_Tag
         exclude =("timestamp",)
-
-
 
 class DetailUserTagSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField('is_title')
@@ -46,8 +42,6 @@ class DetailUserTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = User_Tag
         fields=["title","content","user","timestamp"]
-
-
 
 class UpdateUserTagSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField('is_title')

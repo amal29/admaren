@@ -36,7 +36,7 @@ class OverViewList(generics.ListAPIView):
         })
 
 
-
+#For User Registration
 class Registration(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserRegistrationSerializer
@@ -64,7 +64,7 @@ class Registration(generics.CreateAPIView):
             message = str(e)
             return Response({'status': 'error', 'response_code': 500, "message": message})
 
-
+#For User Login
 class UserLogin(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
@@ -79,7 +79,6 @@ class UserLogin(generics.CreateAPIView):
                 refresh=RefreshToken.for_user(user_obj)
                 login(request,user_obj)
                 return Response({'status': 'success','user_id':user_obj.id,'refresh':str(refresh),'access':str(refresh.access_token),'response_code': status.HTTP_200_OK})
-
             else:
                 return Response({'status': 'failed', 'response_code': status.HTTP_401_UNAUTHORIZED,"message":"invalid user"})
         except Exception as e:
@@ -87,6 +86,7 @@ class UserLogin(generics.CreateAPIView):
             return Response({'status': 'error', 'response_code': 500, "message": message})
 
 
+#For User Tag Creation
 
 class TagCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -96,11 +96,9 @@ class TagCreate(generics.CreateAPIView):
             data=request.data
             user_id=request.user.id
             if data and user_id:
-                print(request.data)
                 tag_id=Tag.objects.filter(title=data['title']).first()
                 if not tag_id:
                     tag_obj=Tag.objects.create(title=data['title'])
-                    print("tag_obj",tag_obj.pk)
                     User_Tag.objects.create(title_id=tag_obj.pk,user_id=user_id,content=data['content'])
                 else:
                     User_Tag.objects.create(title_id=tag_id.pk,user_id=user_id,content=data['content'])
@@ -111,27 +109,25 @@ class TagCreate(generics.CreateAPIView):
             message = str(e)
             return Response({'status': 'error', 'response_code': 500, "message": message})
 
+#For Single User Tag Detailed list
 
 class UserTagDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     queryset=User_Tag
     serializer_class = DetailUserTagSerializer
 
-
+#For Single User Tag updation
 class UpdateUserTag(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset=User_Tag
     serializer_class = UpdateUserTagSerializer
     def patch(self, request, **kwargs):
         try:
-            print(request.data)
             data=request.data
             user_obj=User_Tag.objects.filter(pk=kwargs['pk']).first()
             if data:
                 if user_obj:
-                    print(user_obj.user)
                     tag_obj=Tag.objects.filter(title=user_obj.title).update(title=data['title'])
-
                     cust_obj=CustomUser.objects.filter(email=user_obj.user).update(username=data['user'])
                     user_obj.content=data['content']
                     user_obj.save()
@@ -142,6 +138,7 @@ class UpdateUserTag(generics.RetrieveUpdateAPIView):
             message = str(e)
             return Response({'status': 'error', 'response_code': 500, "message": message})
 
+#For Single User Tag  Deletion
 class DeleteUserTag(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset=User_Tag
@@ -157,6 +154,7 @@ class DeleteUserTag(generics.DestroyAPIView):
 
 
 
+#For  All Tag  list
 
 class TagList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -175,7 +173,7 @@ class TagList(generics.ListAPIView):
             'data':response.data
         })
 
-
+#For Single  Tag Detailed list
 class TagDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     queryset=Tag
